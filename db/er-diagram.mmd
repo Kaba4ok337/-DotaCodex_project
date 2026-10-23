@@ -1,0 +1,127 @@
+erDiagram
+    USERS ||--o{ GUIDES : authors
+    USERS ||--o{ COMMENTS : writes
+    USERS ||--o{ FAVORITES : saves
+    HEROES ||--o{ ABILITIES : contains
+    HEROES ||--o{ TALENTS : has
+    HEROES ||--o{ GUIDES : documented_in
+    PATCHES ||--o{ GUIDES : references
+    PATCHES ||--o{ PATCH_CHANGES : includes
+    HEROES ||--o{ PATCH_CHANGES : may_change
+    ABILITIES ||--o{ PATCH_CHANGES : may_change
+    ITEMS ||--o{ PATCH_CHANGES : may_change
+    GUIDES ||--o{ GUIDE_ITEMS : recommends
+    ITEMS ||--o{ GUIDE_ITEMS : selected_in
+    ITEMS ||--o{ ITEM_RECIPES : assembled_from
+    ITEMS ||--o{ ITEM_RECIPES : component_of
+    GUIDES ||--o{ COMMENTS : receives
+    HEROES ||--o{ FAVORITES : can_be_saved
+    ITEMS ||--o{ FAVORITES : can_be_saved
+    GUIDES ||--o{ FAVORITES : can_be_saved
+
+    USERS {
+      int id PK
+      string nickname UK
+      string email UK
+      string password_hash
+      string role
+      boolean email_verified
+      datetime created_at
+    }
+    HEROES {
+      int id PK
+      string name UK
+      string slug UK
+      string primary_attribute
+      string attack_type
+      string roles
+      int base_health
+      int base_mana
+      float armor
+      string lore
+    }
+    ABILITIES {
+      int id PK
+      int hero_id FK
+      string name
+      string ability_type
+      string description
+      string mana_cost
+      string cooldown
+      json levels_json
+    }
+    TALENTS {
+      int id PK
+      int hero_id FK
+      int level
+      string left_talent
+      string right_talent
+    }
+    ITEMS {
+      int id PK
+      string name UK
+      string slug UK
+      int cost
+      string category
+      string description
+      string bonuses
+      string effect
+    }
+    ITEM_RECIPES {
+      int item_id PK,FK
+      int component_item_id PK,FK
+      int quantity
+    }
+    PATCHES {
+      int id PK
+      string version UK
+      date release_date
+      string summary
+    }
+    PATCH_CHANGES {
+      int id PK
+      int patch_id FK
+      int hero_id FK
+      int ability_id FK
+      int item_id FK
+      string change_type
+      string description
+    }
+    GUIDES {
+      int id PK
+      int author_id FK
+      int hero_id FK
+      int patch_id FK
+      string title
+      string role
+      string description
+      json skill_build_json
+      json talent_build_json
+      float rating
+      string status
+      int views
+      boolean is_outdated
+    }
+    GUIDE_ITEMS {
+      int id PK
+      int guide_id FK
+      int item_id FK
+      string game_stage
+      int position
+    }
+    COMMENTS {
+      int id PK
+      int user_id FK
+      int guide_id FK
+      string body
+      boolean is_hidden
+      datetime created_at
+    }
+    FAVORITES {
+      int id PK
+      int user_id FK
+      int hero_id FK
+      int item_id FK
+      int guide_id FK
+      datetime created_at
+    }

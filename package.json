@@ -1,0 +1,24 @@
+{
+  "name": "dotacodex-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Учебный MVP русскоязычной вики по Dota 2",
+  "type": "commonjs",
+  "engines": { "node": ">=22.13.0" },
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./public/tailwind.css --watch",
+    "start": "npm run build:css && node server.js",
+    "dev": "npm run build:css && node --watch server.js",
+    "test": "node --test",
+    "db:setup": "node scripts/setup-db.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.14",
+    "tailwindcss": "^4.1.14"
+  }
+}
