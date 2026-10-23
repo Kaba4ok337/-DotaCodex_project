@@ -80,7 +80,7 @@ async function handleApi(req,res,url) {
     const client=await pool.connect();
     try{
       await client.query('BEGIN');
-      const saved=await client.query(`INSERT INTO guides(author_id,hero_id,patch_id,title,role,description,skill_build_json,talent_build_json,status) VALUES(2,$1,$2,$3,$4,'[]','{}',$5) RETURNING id`,[heroId,patchId,title,role,description,status]);
+      const saved=await client.query(`INSERT INTO guides(author_id,hero_id,patch_id,title,role,description,skill_build_json,talent_build_json,status) VALUES(2,$1,$2,$3,$4,$5,'[]','{}',$6) RETURNING id`,[heroId,patchId,title,role,description,status]);
       const guideId=saved.rows[0].id,stages=new Set(['Старт','Ранняя игра','Середина игры','Поздняя игра']);
       for(const [index,entry] of (Array.isArray(payload.items)?payload.items:[]).slice(0,20).entries()){
         const itemId=Number(entry.item_id),stage=String(entry.game_stage||'Старт');
