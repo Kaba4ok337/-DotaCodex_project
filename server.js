@@ -6,6 +6,7 @@ const path = require('node:path');
 const { URL } = require('node:url');
 require('dotenv').config();
 const { Pool } = require('pg');
+const { renderSeo, sitemap, siteUrl } = require('./seo');
 
 const ROOT = __dirname;
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required. Add your Supabase PostgreSQL connection string to .env.');
@@ -96,13 +97,19 @@ function createServer(){return http.createServer(async(req,res)=>{
   try{
     if(url.pathname.startsWith('/api/'))return await handleApi(req,res,url);
     if(req.method!=='GET'&&req.method!=='HEAD')return sendError(res,405,'Метод не поддерживается');
+    if(url.pathname==='/robots.txt'){const origin=siteUrl();const body=`User-agent: *\nAllow: /\nDisallow: /api/\n${origin ? `Sitemap: ${origin}/sitemap.xml\n` : ''}`;res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8'});return res.end(req.method==='HEAD'?undefined:body);}
+    if(url.pathname==='/sitemap.xml'){const body=await sitemap(pool);if(!body)return sendError(res,503,'Укажите SITE_URL для карты сайта');res.writeHead(200,{'Content-Type':'application/xml; charset=utf-8'});return res.end(req.method==='HEAD'?undefined:body);}
+    const seo=await renderSeo(url.pathname,pool,getHeroDetails);
+    if(seo===false)return sendError(res,404,'Герой не найден');
+    if(seo){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(req.method==='HEAD'?undefined:seo);}
     const requested=decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname);
     const relative=requested==='/tailwind.css'?'/public/tailwind.css':requested;
+    if(relative.split('/').some(part=>part.startsWith('.')))return sendError(res,403,'Доступ запрещён');
     const target=path.resolve(ROOT,`.${relative}`);
     if(target!==ROOT&&!target.startsWith(ROOT+path.sep))return sendError(res,403,'Доступ запрещён');
     if(!fs.existsSync(target)||!fs.statSync(target).isFile())return sendError(res,404,'Файл не найден');
-    const content=fs.readFileSync(target);res.writeHead(200,{'Content-Type':mimeTypes[path.extname(target).toLowerCase()]||'application/octet-stream','Content-Length':content.length,'X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:content);
+    const content=fs.readFileSync(target);res.writeHead(200,{'Content-Type':mimeTypes[path.extname(target).toLowerCase()]||'application/octet-stream','Content-Length':content.length,'X-Content-Type-Options':'nosniff',...(['/tailwind.css','/app.js'].includes(relative)?{'Cache-Control':'no-cache'}:{})});res.end(req.method==='HEAD'?undefined:content);
   }catch(error){console.error(error);if(!res.headersSent)sendError(res,500,'Внутренняя ошибка сервера');else res.end();}
 });}
-if(require.main===module){const port=Number(process.env.PORT||8000),host=process.env.HOST||'127.0.0.1',server=createServer();server.listen(port,host,()=>console.log(`DotaCodex запущен: http://${host}:${port} | БД: Supabase PostgreSQL`));const shutdown=()=>server.close(()=>pool.end().finally(()=>process.exit(0)));process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);}
+if(require.main===module){const port=Number(process.env.PORT||8000),host=process.env.HOST||'127.0.0.1',server=createServer();server.listen(port,host,()=>console.log(`Dota Atlas запущен: http://${host}:${port} | БД: Supabase PostgreSQL`));const shutdown=()=>server.close(()=>pool.end().finally(()=>process.exit(0)));process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);}
 module.exports={pool,createServer,getHeroes,getHeroDetails,getPatches,getGuides,getGuideDetails};

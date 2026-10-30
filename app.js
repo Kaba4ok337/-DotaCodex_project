@@ -28,11 +28,11 @@ function heroArt(hero, large = false) {
   return `<div class="hero-art${large ? ' large-art' : ''}"><small>${escapeHtml(hero.primary_attribute)}</small><span class="hero-emblem">${escapeHtml(emblem(hero.name))}</span></div>`;
 }
 function heroCard(hero) {
-  return `<article class="hero-card" tabindex="0" role="button" data-hero-id="${hero.id}" aria-label="Открыть героя ${escapeHtml(hero.name)}">
+  return `<a class="hero-card" href="/heroes/${encodeURIComponent(hero.slug)}" aria-label="Открыть героя ${escapeHtml(hero.name)}">
     ${heroArt(hero)}<h3>${escapeHtml(hero.name)}</h3><p class="subline">${escapeHtml(hero.attack_type)} · ${hero.ability_count || 0} способностей</p>
     <div class="tags">${splitTags(hero.roles).slice(0,3).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
     <div class="card-stats"><span>Здоровье ${number(hero.base_health)}</span><span>Броня ${Number(hero.armor).toFixed(1)}</span></div>
-  </article>`;
+  </a>`;
 }
 function itemCard(item) {
   const marker = ({'Расходуемые':'✦','Атака':'⚔','Мобильность':'↗','Защита':'⬡','Поддержка':'✚','Улучшение':'✧','Атрибуты':'◇'}[item.category] || '✧');
@@ -48,6 +48,12 @@ function heading(kicker, title, subtitle, right = '') {
   return `<div class="page-heading"><div><div class="section-kicker">${escapeHtml(kicker)}</div><h1>${escapeHtml(title)}</h1><p>${escapeHtml(subtitle)}</p></div>${right}</div>`;
 }
 function navigate(page, { query = '', reset = true } = {}) {
+  const route = page === 'home' ? '/' : ['heroes','items'].includes(page) ? `/${page}` : `/?view=${encodeURIComponent(page)}`;
+  const url = new URL(route, location.origin); if (query) url.searchParams.set('q', query);
+  history.pushState({}, '', url);
+  const label = {home:'Вся Dota 2 в одной вики',heroes:'Герои Dota 2',items:'Предметы Dota 2',patches:'Патчи',guides:'Гайды',builder:'Создание гайда',compare:'Сравнение героев'}[page];
+  document.title = `${label || 'Dota 2'} — Dota Atlas`;
+  const canonical = document.querySelector('link[rel=canonical]'); if (canonical) canonical.href = new URL(url.pathname, canonical.href).href;
   state.page = page; state.q = query;
   if (reset) { state.selectedHero = null; state.selectedGuide = null; }
   $$('.main-nav [data-page]').forEach(button => button.classList.toggle('active', button.dataset.page === page));
@@ -66,12 +72,13 @@ function renderHome() {
     <section class="content-wrap home-lower"><div class="page-heading"><div><div class="section-kicker">HERO SPOTLIGHT</div><h1>С чего начнём?</h1><p>Несколько героев из демонстрационного каталога.</p></div><button class="btn-secondary" data-page="heroes">Весь каталог →</button></div><div class="catalog-grid">${featured.map(heroCard).join('')}</div></section>`;
 }
 function renderHeroDetail(hero) {
-  return `<section id="heroDetail" class="detail-panel"><div class="detail-top"><div>${heroArt(hero,true)}<button class="btn-ghost" data-close-detail="hero">← Назад к каталогу</button></div><div><div class="section-kicker">КАРТОЧКА ГЕРОЯ</div><h2>${escapeHtml(hero.name)}</h2><div class="subline">${escapeHtml(hero.primary_attribute)} · ${escapeHtml(hero.attack_type)}</div><div class="tags detail-tags">${splitTags(hero.roles).map(role => `<span class="tag">${escapeHtml(role)}</span>`).join('')}</div><p>${escapeHtml(hero.lore)}</p><div class="stat-tiles"><div class="stat-tile"><span>Здоровье</span><strong>${number(hero.base_health)}</strong></div><div class="stat-tile"><span>Мана</span><strong>${number(hero.base_mana)}</strong></div><div class="stat-tile"><span>Броня</span><strong>${Number(hero.armor).toFixed(1)}</strong></div><div class="stat-tile"><span>Способности</span><strong>${hero.abilities.length}</strong></div></div><div class="form-actions"><button class="btn-secondary" data-favorite-hero="${hero.id}">☆ В избранное</button><button class="btn-secondary" data-compare-hero="${hero.id}">Добавить к сравнению</button></div></div></div>
-    <div class="detail-section"><h3>Способности</h3><div class="ability-list">${hero.abilities.map(a => `<article class="ability"><div class="tags"><span class="tag">${escapeHtml(a.ability_type)}</span></div><h4>${escapeHtml(a.name)}</h4><p>${escapeHtml(a.description)}</p><p class="subline">Мана: ${escapeHtml(a.mana_cost)} · Перезарядка: ${escapeHtml(a.cooldown)}</p></article>`).join('')}</div></div>
-    <div class="detail-section"><h3>Таланты</h3><div class="talents">${hero.talents.map(t => `<div class="talent-row"><span class="talent-level">Ур. ${t.level}</span><span>${escapeHtml(t.left_talent)}</span><span>${escapeHtml(t.right_talent)}</span></div>`).join('') || '<div class="empty-state">Для этого героя ещё не внесены таланты.</div>'}</div></div>
-    <div class="detail-section"><h3>Предметы из учебных гайдов</h3><div class="recommended">${hero.recommended_items.map(item => `<div class="recommended-item">${escapeHtml(item.name)} <strong>${number(item.cost)} g</strong></div>`).join('') || '<span class="subline">Рекомендации пока отсутствуют.</span>'}</div></div><p class="form-help">Данные карточки — демонстрационные примеры для проектирования интерфейса и БД.</p></section>`;
+  return `<section id="heroDetail" class="detail-panel"><div class="detail-top"><div>${heroArt(hero,true)}<button class="btn-ghost" data-close-detail="hero">← Назад к каталогу</button></div><div><div class="section-kicker">КАРТОЧКА ГЕРОЯ</div><h1>${escapeHtml(hero.name)}</h1><div class="subline">${escapeHtml(hero.primary_attribute)} · ${escapeHtml(hero.attack_type)}</div><div class="tags detail-tags">${splitTags(hero.roles).map(role => `<span class="tag">${escapeHtml(role)}</span>`).join('')}</div><p>${escapeHtml(hero.lore)}</p><div class="stat-tiles"><div class="stat-tile"><span>Здоровье</span><strong>${number(hero.base_health)}</strong></div><div class="stat-tile"><span>Мана</span><strong>${number(hero.base_mana)}</strong></div><div class="stat-tile"><span>Броня</span><strong>${Number(hero.armor).toFixed(1)}</strong></div><div class="stat-tile"><span>Способности</span><strong>${hero.abilities.length}</strong></div></div><div class="form-actions"><button class="btn-secondary" data-favorite-hero="${hero.id}">☆ В избранное</button><button class="btn-secondary" data-compare-hero="${hero.id}">Добавить к сравнению</button></div></div></div>
+    <div class="detail-section"><h2>Способности</h2><div class="ability-list">${hero.abilities.map(a => `<article class="ability"><div class="tags"><span class="tag">${escapeHtml(a.ability_type)}</span></div><h3>${escapeHtml(a.name)}</h3><p>${escapeHtml(a.description)}</p><p class="subline">Мана: ${escapeHtml(a.mana_cost)} · Перезарядка: ${escapeHtml(a.cooldown)}</p></article>`).join('')}</div></div>
+    <div class="detail-section"><h2>Таланты</h2><div class="talents">${hero.talents.map(t => `<div class="talent-row"><span class="talent-level">Ур. ${t.level}</span><span>${escapeHtml(t.left_talent)}</span><span>${escapeHtml(t.right_talent)}</span></div>`).join('') || '<div class="empty-state">Для этого героя ещё не внесены таланты.</div>'}</div></div>
+    <div class="detail-section"><h2>Предметы из учебных гайдов</h2><div class="recommended">${hero.recommended_items.map(item => `<div class="recommended-item">${escapeHtml(item.name)} <strong>${number(item.cost)} g</strong></div>`).join('') || '<span class="subline">Рекомендации пока отсутствуют.</span>'}</div></div><p class="form-help">Данные карточки — демонстрационные примеры для проектирования интерфейса и БД.</p></section>`;
 }
 function renderHeroes() {
+  if (state.selectedHero) return `<div class="content-wrap">${renderHeroDetail(state.selectedHero)}</div>`;
   const filtered = state.heroes.filter(h => (!state.q || `${h.name} ${h.roles} ${h.primary_attribute}`.toLowerCase().includes(state.q.toLowerCase())) && (state.attribute === 'Все' || h.primary_attribute === state.attribute) && (state.role === 'Все' || h.roles.includes(state.role)) && (state.attackType === 'Все' || h.attack_type === state.attackType));
   return `<div class="content-wrap">${heading('СПРАВОЧНИК · ГЕРОИ','Герои','Изучай характеристики, способности и игровые роли.',`<span class="count-pill">${filtered.length} героев</span>`)}
     <div class="filter-row"><span class="filter-label">Атрибут</span>${['Все','Сила','Ловкость','Интеллект','Универсальный'].map(x=>`<button class="chip${state.attribute===x?' active':''}" data-filter-attribute="${escapeHtml(x)}">${escapeHtml(x)}</button>`).join('')}</div>
@@ -127,13 +134,17 @@ async function refreshData() {
     $('#apiStatus').textContent = `Supabase · ${stats.heroes} героев · API OK`;
     const params = new URLSearchParams(location.search);
     const allowedViews = new Set(['home','heroes','items','patches','guides','builder','compare']);
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    if (pathParts[0] === 'heroes') state.page = 'heroes';
+    if (pathParts[0] === 'items') state.page = 'items';
     const initialView = params.get('view');
     if (allowedViews.has(initialView)) state.page = initialView;
     if (params.has('q')) state.q = params.get('q') || '';
     if (params.has('category')) state.itemCategory = params.get('category') || 'Все';
     if (params.has('patch')) state.selectedPatch = Number(params.get('patch')) || null;
     renderPage();
-    if (params.has('hero')) await openHero(Number(params.get('hero')));
+    if (pathParts[0] === 'heroes' && pathParts[1]) { const hero = heroes.find(h => h.slug === pathParts[1]); if (hero) await openHero(hero.id); }
+    else if (params.has('hero')) await openHero(Number(params.get('hero')));
     if (params.has('guide')) await openGuide(Number(params.get('guide')));
   } catch (error) {
     $('#apiStatus').textContent = 'API не отвечает';
@@ -177,7 +188,7 @@ document.addEventListener('click', async event => {
   const attack = event.target.closest('[data-filter-attack]'); if (attack) { state.attackType=attack.dataset.filterAttack; renderPage(); return; }
   const category = event.target.closest('[data-filter-category]'); if (category) { state.itemCategory=category.dataset.filterCategory; renderPage(); return; }
   const patch = event.target.closest('[data-patch-id]'); if (patch) { state.selectedPatch=Number(patch.dataset.patchId); renderPage(); return; }
-  if (event.target.closest('[data-close-detail="hero"]')) { state.selectedHero=null; renderPage(); return; }
+  if (event.target.closest('[data-close-detail="hero"]')) { navigate('heroes'); return; }
   if (event.target.closest('[data-back-guides]')) { state.selectedGuide=null; renderPage(); return; }
   const compareHero = event.target.closest('[data-compare-hero]'); if (compareHero) { state.compareLeft=compareHero.dataset.compareHero; state.compareRight=state.compareRight || String(state.heroes.find(h=>h.id!==Number(state.compareLeft))?.id || ''); navigate('compare'); return; }
   const favorite = event.target.closest('[data-favorite-hero]'); if (favorite) { toast('Избранное предусмотрено схемой БД; вход в MVP пока не реализован.'); return; }
@@ -194,5 +205,5 @@ document.addEventListener('change', event => {
   if(event.target.id==='compareLeft'){state.compareLeft=event.target.value;renderPage();}
   if(event.target.id==='compareRight'){state.compareRight=event.target.value;renderPage();}
 });
+window.addEventListener('popstate', () => location.reload());
 refreshData();
-

@@ -1,4 +1,4 @@
-INSERT INTO users (id, nickname, email, password_hash, role, email_verified, created_at) VALUES (1, 'CodexAdmin', 'admin@example.test', 'DEMO_HASH_NOT_FOR_AUTH', 'admin', 1, '2026-10-09 10:01:23') ON CONFLICT DO NOTHING;
+INSERT INTO users (id, nickname, email, password_hash, role, email_verified, created_at) VALUES (1, 'AtlasAdmin', 'admin@example.test', 'DEMO_HASH_NOT_FOR_AUTH', 'admin', 1, '2026-10-09 10:01:23') ON CONFLICT DO NOTHING;
 INSERT INTO users (id, nickname, email, password_hash, role, email_verified, created_at) VALUES (2, 'RuneWriter', 'author@example.test', 'DEMO_HASH_NOT_FOR_AUTH', 'author', 1, '2026-10-09 10:01:23') ON CONFLICT DO NOTHING;
 INSERT INTO users (id, nickname, email, password_hash, role, email_verified, created_at) VALUES (3, 'NewPlayer', 'player@example.test', 'DEMO_HASH_NOT_FOR_AUTH', 'user', 1, '2026-10-09 10:01:23') ON CONFLICT DO NOTHING;
 INSERT INTO patches (id, version, release_date, summary) VALUES (1, '7.35d-demo', '2025-02-01', 'Демонстрационная запись патча для проверки структуры раздела изменений.') ON CONFLICT DO NOTHING;

@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS heroes (
     roles TEXT NOT NULL,
     base_health INTEGER NOT NULL CHECK (base_health >= 0),
     base_mana INTEGER NOT NULL CHECK (base_mana >= 0),
-    armor REAL NOT NULL DEFAULT 0 CHECK (armor >= 0),
+    armor REAL NOT NULL DEFAULT 0,
     lore TEXT NOT NULL,
     image_url TEXT
 );

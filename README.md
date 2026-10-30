@@ -1,4 +1,4 @@
-# DotaCodex
+# Dota Atlas
 
 Учебный MVP русскоязычной вики по Dota 2. В проекте есть каталог героев и предметов, история патчей, гайды, сравнение героев и REST API.
 
@@ -60,24 +60,33 @@ npm run dev        # режим разработки с перезапуском
 npm run build:css  # собрать Tailwind CSS
 npm run watch:css  # пересобирать CSS при изменениях
 npm run db:setup   # создать схему и загрузить демонстрационные данные
+npm run db:sync-catalog # обновить героев и предметы из источника Valve
 npm test           # запустить тесты
 ```
+
+## SEO
+
+Для публикации укажи в `.env` переменную `SITE_URL` с публичным адресом сайта, например `https://example.com`. Тогда сервер сформирует `sitemap.xml`, ссылку на него в `robots.txt` и canonical-адреса. Без неё карта сайта недоступна, чтобы не публиковать неверный домен. Каталоги и страницы героев доступны по отдельным адресам и содержат данные в серверном HTML.
+
+## Обновление каталога
+
+После настройки базы запусти `npm run db:sync-catalog`. Скрипт загружает русскоязычные данные Valve и обновляет героев, способности и доступные предметы в одной транзакции, сохраняя идентификаторы существующих записей. История патчей, гайды и таланты остаются демонстрационными. Данные обновляются при запуске команды, не автоматически.
 
 ## Запуск через Docker
 
 Убедись, что Docker Desktop запущен и в корне проекта есть настроенный `.env`.
 
 ```powershell
-docker build -t dotacodex:local .
-docker run --rm --name dotacodex -d --env-file .env -p 8000:8000 dotacodex:local
+docker build -t dota-atlas:local .
+docker run --rm --name dota-atlas -d --env-file .env -p 8000:8000 dota-atlas:local
 docker ps
-docker logs dotacodex
+docker logs dota-atlas
 ```
 
 Приложение будет доступно по адресу <http://localhost:8000>. Остановить контейнер можно командой:
 
 ```powershell
-docker stop dotacodex
+docker stop dota-atlas
 ```
 
 ## GitHub Actions и GHCR

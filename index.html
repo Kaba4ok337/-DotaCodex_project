@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f1115">
-  <meta name="description" content="DotaCodex — русскоязычная вики по Dota 2: герои, предметы, патчи и гайды.">
-  <title>DotaCodex — вся Dota 2 в одной вики</title>
-  <link rel="stylesheet" href="/tailwind.css">
+  <meta name="description" content="Dota Atlas — русскоязычная вики по Dota 2: герои, предметы, патчи и гайды.">
+  <title>Dota Atlas — вся Dota 2 в одной вики</title>
+  <link rel="stylesheet" href="/tailwind.css?v=2">
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
   <header class="topbar sticky top-0 z-20 flex items-center">
-    <button class="wordmark" data-page="home" aria-label="DotaCodex — главная">Dota<span>Codex</span></button>
+    <a class="wordmark" href="/" aria-label="Dota Atlas — главная">Dota<span>Atlas</span></a>
     <nav class="main-nav" aria-label="Основная навигация">
-      <button data-page="heroes">Герои</button>
-      <button data-page="items">Предметы</button>
+      <a href="/heroes">Герои</a>
+      <a href="/items">Предметы</a>
       <button data-page="patches">Патчи</button>
       <button data-page="guides">Гайды</button>
       <button data-page="compare">Сравнение</button>
@@ -24,8 +24,8 @@
   <main id="pageContent" class="page-content min-h-[calc(100vh-126px)]" aria-live="polite">
     <section class="home-hero"><div class="eyebrow">GAME KNOWLEDGE BASE</div><h1>Вся Dota 2 <span>в одной вики</span></h1><p>Герои, предметы, патчи и гайды на русском — с пометкой об актуальности.</p><div class="loading-block">Подключаем справочник…</div></section>
   </main>
-  <footer class="site-footer flex items-center justify-between gap-4 border-t border-slate-800 px-6 py-4 text-xs text-slate-500"><span><b>DotaCodex</b> · учебный MVP</span><span>Демонстрационные данные · проверь сведения перед игрой</span><span id="apiStatus">База данных: подключение…</span></footer>
+  <footer class="site-footer flex items-center justify-between gap-4 border-t border-slate-800 px-6 py-4 text-xs text-slate-500"><span><b>Dota Atlas</b> · учебный MVP</span><span>Демонстрационные данные · проверь сведения перед игрой</span><span id="apiStatus">База данных: подключение…</span></footer>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js" defer></script>
+  <script src="/app.js?v=2" defer></script>
 </body>
 </html>
