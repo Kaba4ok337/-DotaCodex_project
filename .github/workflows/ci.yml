@@ -1,4 +1,4 @@
-name: DotaCodex CI and Docker
+name: Dota Atlas CI and Docker
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/kaba4ok337/dotacodex
+          images: ghcr.io/kaba4ok337/dota-atlas
           tags: |
             type=raw,value=latest
             type=sha

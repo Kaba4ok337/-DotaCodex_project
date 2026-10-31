@@ -1,4 +1,4 @@
-# DotaCodex
+# Dota Atlas
 
 Учебный MVP русскоязычной вики по Dota 2. В проекте есть каталог героев и предметов, история патчей, гайды, сравнение героев и REST API.
 
@@ -68,16 +68,16 @@ npm test           # запустить тесты
 Убедись, что Docker Desktop запущен и в корне проекта есть настроенный `.env`.
 
 ```powershell
-docker build -t dotacodex:local .
-docker run --rm --name dotacodex -d --env-file .env -p 8000:8000 dotacodex:local
+docker build -t dota-atlas:local .
+docker run --rm --name dota-atlas -d --env-file .env -p 8000:8000 dota-atlas:local
 docker ps
-docker logs dotacodex
+docker logs dota-atlas
 ```
 
 Приложение будет доступно по адресу <http://localhost:8000>. Остановить контейнер можно командой:
 
 ```powershell
-docker stop dotacodex
+docker stop dota-atlas
 ```
 
 ## GitHub Actions и GHCR
@@ -86,7 +86,7 @@ Workflow находится в `.github/workflows/ci.yml` и запускает�
 
 1. В настройках репозитория открой **Settings → Secrets and variables → Actions**.
 2. Создай секрет `SUPABASE_DATABASE_URL` со строкой подключения к Supabase. Без него шаг подготовки базы и тесты не смогут подключиться к базе.
-3. При push в `main` после успешной проверки workflow собирает Docker-образ и публикует его в GHCR по адресу `ghcr.io/kaba4ok337/dotacodex` с тегами `latest` и SHA коммита.
+3. При push в `main` после успешной проверки workflow собирает Docker-образ и публикует его в GHCR по адресу `ghcr.io/kaba4ok337/dota-atlas` с тегами `latest` и SHA коммита.
 4. Результаты сборки смотри во вкладке **Actions**, опубликованный образ — в разделе **Packages**.
 
 Новый пакет GHCR обычно приватный. Чтобы разрешить скачивание без авторизации, измени его видимость в настройках пакета.

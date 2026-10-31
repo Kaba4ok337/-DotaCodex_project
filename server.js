@@ -104,5 +104,5 @@ function createServer(){return http.createServer(async(req,res)=>{
     const content=fs.readFileSync(target);res.writeHead(200,{'Content-Type':mimeTypes[path.extname(target).toLowerCase()]||'application/octet-stream','Content-Length':content.length,'X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:content);
   }catch(error){console.error(error);if(!res.headersSent)sendError(res,500,'Внутренняя ошибка сервера');else res.end();}
 });}
-if(require.main===module){const port=Number(process.env.PORT||8000),host=process.env.HOST||'127.0.0.1',server=createServer();server.listen(port,host,()=>console.log(`DotaCodex запущен: http://${host}:${port} | БД: Supabase PostgreSQL`));const shutdown=()=>server.close(()=>pool.end().finally(()=>process.exit(0)));process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);}
+if(require.main===module){const port=Number(process.env.PORT||8000),host=process.env.HOST||'127.0.0.1',server=createServer();server.listen(port,host,()=>console.log(`Dota Atlas запущен: http://${host}:${port} | БД: Supabase PostgreSQL`));const shutdown=()=>server.close(()=>pool.end().finally(()=>process.exit(0)));process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);}
 module.exports={pool,createServer,getHeroes,getHeroDetails,getPatches,getGuides,getGuideDetails};
