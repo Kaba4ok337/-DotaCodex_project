@@ -11,7 +11,8 @@
     "start": "npm run build:css && node server.js",
     "dev": "npm run build:css && node --watch server.js",
     "test": "node --test",
-    "db:setup": "node scripts/setup-db.js"
+    "db:setup": "node scripts/setup-db.js",
+    "db:sync-catalog": "node scripts/sync-catalog.js"
   },
   "dependencies": {
     "dotenv": "^16.6.1",

@@ -100,3 +100,42 @@ test('guide builder rejects incomplete input', async () => {
   });
   assert.equal(response.status, 400);
 });
+
+test('private environment file is not served', async () => {
+  const response = await fetch(`${baseUrl}/.env`);
+  assert.equal(response.status, 403);
+});
+
+test('SEO pages render catalog and hero content without JavaScript', async () => {
+  const catalog = await fetch(`${baseUrl}/heroes`);
+  const catalogHtml = await catalog.text();
+  assert.equal(catalog.status, 200);
+  assert.match(catalogHtml, /<title>Герои Dota 2 — Dota Atlas<\/title>/);
+  assert.match(catalogHtml, /href="\/heroes\/axe"/);
+  const hero = await fetch(`${baseUrl}/heroes/axe`);
+  const heroHtml = await hero.text();
+  assert.equal(hero.status, 200);
+  assert.match(heroHtml, /<h1>Axe<\/h1>/);
+  assert.match(heroHtml, /Berserker/);
+  assert.equal((await fetch(`${baseUrl}/heroes/unknown-hero`)).status, 404);
+  const items = await fetch(`${baseUrl}/items`);
+  assert.match(await items.text(), /Blink Dagger/);
+});
+
+test('robots and sitemap use only the configured public origin', async () => {
+  const previous = process.env.SITE_URL;
+  process.env.SITE_URL = 'https://atlas.example';
+  try {
+    const robots = await (await fetch(`${baseUrl}/robots.txt`)).text();
+    assert.match(robots, /Sitemap: https:\/\/atlas\.example\/sitemap\.xml/);
+    const sitemapResponse = await fetch(`${baseUrl}/sitemap.xml`);
+    assert.match(sitemapResponse.headers.get('content-type'), /application\/xml/);
+    const xml = await sitemapResponse.text();
+    assert.match(xml, /<loc>https:\/\/atlas\.example\/heroes\/axe<\/loc>/);
+    const hero = await (await fetch(`${baseUrl}/heroes/axe`)).text();
+    assert.match(hero, /rel="canonical" href="https:\/\/atlas\.example\/heroes\/axe"/);
+  } finally {
+    if (previous === undefined) delete process.env.SITE_URL;
+    else process.env.SITE_URL = previous;
+  }
+});

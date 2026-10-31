@@ -26,8 +26,8 @@
   .wordmark { @apply whitespace-nowrap border-0 bg-transparent p-0 text-xl font-extrabold tracking-[-.8px] text-atlas-gold; }
   .wordmark span { @apply text-[#f0bd5f]; }
   .main-nav { @apply ml-[clamp(8px,2vw,28px)] flex items-center gap-[clamp(14px,2.8vw,48px)]; }
-  .main-nav button { @apply whitespace-nowrap border-0 border-b-2 border-transparent bg-transparent py-[23px] text-[13px] text-[#a5a8b1] hover:text-atlas-text; }
-  .main-nav button:hover, .main-nav button.active { @apply border-b-atlas-red text-atlas-text; }
+  .main-nav button, .main-nav a { @apply no-underline whitespace-nowrap border-0 border-b-2 border-transparent bg-transparent py-[23px] text-[13px] text-[#a5a8b1] hover:text-atlas-text; }
+  .main-nav button:hover, .main-nav button.active, .main-nav a:hover, .main-nav a.active { @apply border-b-atlas-red text-atlas-text; }
   .top-search { @apply ml-auto flex h-9 w-[min(260px,22vw)] min-w-[130px] items-center gap-2 rounded-full border border-atlas-line bg-[#0e1015] px-[13px] text-[#687080]; }
   .top-search span { @apply text-[22px] leading-none; }
   .top-search input { @apply min-w-0 w-full border-0 bg-transparent text-[11px] text-atlas-text outline-none; }
@@ -64,7 +64,7 @@
   .filter-row { @apply mb-[22px] flex flex-wrap items-center gap-2; }
   .filter-label { @apply mr-1 text-[11px] text-atlas-muted; }
   .catalog-grid { @apply grid grid-cols-[repeat(4,minmax(0,1fr))] gap-[15px]; }
-  .hero-card, .item-card, .guide-card { @apply min-w-0 rounded-[11px] border border-[#292e38] bg-atlas-panel p-4 transition hover:-translate-y-0.5 hover:border-[#6b3b35]; }
+  .hero-card, .item-card, .guide-card { @apply no-underline text-inherit min-w-0 rounded-[11px] border border-[#292e38] bg-atlas-panel p-4 transition hover:-translate-y-0.5 hover:border-[#6b3b35]; }
   .hero-card { @apply cursor-pointer; }
   .hero-art { @apply relative mb-[14px] grid h-[118px] place-items-center overflow-hidden rounded-lg bg-[radial-gradient(circle_at_50%_55%,#46404a_0%,#242631_38%,#191c24_75%)]; }
   .hero-art:before, .hero-art:after { content: ""; @apply absolute h-[90px] w-[90px] rotate-[35deg] rounded-full border border-[#d9a44155]; }
@@ -117,7 +117,7 @@
   .detail-section h3 { @apply mb-[13px] mt-0 text-base; }
   .ability-list { @apply grid grid-cols-2 gap-[10px]; }
   .ability { @apply rounded-lg border border-[#2c303a] bg-[#14171d] p-[14px]; }
-  .ability h4 { @apply mb-1 mt-0 text-xs; }
+  .ability h3, .ability h4 { @apply mb-1 mt-0 text-xs; }
   .ability p { @apply m-0 text-[11px]; }
   .talents { @apply grid grid-cols-2 gap-2; }
   .talent-row { @apply grid grid-cols-[58px_1fr_1fr] items-center gap-2 rounded-lg border border-[#2b303a] bg-[#14171d] p-[10px] text-[10px]; }
@@ -174,7 +174,7 @@
     .topbar { @apply h-auto min-h-16 flex-wrap gap-3 px-[15px] py-3; }
     .wordmark { @apply mr-auto; }
     .main-nav { @apply order-3 w-full gap-[22px] overflow-x-auto; }
-    .main-nav button { @apply py-2 pb-[9px]; }
+    .main-nav button, .main-nav a { @apply py-2 pb-[9px]; }
     .top-search { @apply ml-0 w-auto min-w-[100px] flex-1; }
     .login-button { @apply px-[14px]; }
     .home-hero { @apply px-[17px] pt-12 pb-9; }
