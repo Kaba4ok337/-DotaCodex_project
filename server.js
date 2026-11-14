@@ -15,7 +15,6 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 10, idl
 const mimeTypes = { '.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.ico':'image/x-icon' };
 async function all(sql,...params) { let i=0; const statement=sql.replace(/\?/g,()=>`$${++i}`); return (await pool.query(statement,params)).rows; }
 async function one(sql,...params) { return (await all(sql,...params))[0] || null; }
-async function count(table,where='') { return (await one(`SELECT COUNT(*)::int AS n FROM ${table} ${where}`)).n; }
 function sendJson(res,status,data) { const body=Buffer.from(JSON.stringify(data)); res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Content-Length':body.length,'Cache-Control':'no-store'}); res.end(body); }
 function sendError(res,status,message) { sendJson(res,status,{error:message}); }
 function readJson(req) { return new Promise((resolve,reject)=>{ let text=''; req.on('data',chunk=>{text+=chunk;if(text.length>1_000_000)reject(new Error('Слишком большой запрос'));}); req.on('end',()=>{try{resolve(JSON.parse(text||'{}'));}catch{reject(new Error('Некорректный JSON'));}}); req.on('error',reject); }); }
@@ -28,7 +27,8 @@ async function getHeroes(searchParams) {
   const attr=searchParams.get('attribute'); if(attr)add('h.primary_attribute = ?',attr);
   const role=searchParams.get('role'); if(role)add('h.roles ILIKE ?',`%${role}%`);
   const attack=searchParams.get('attackType'); if(attack)add('h.attack_type = ?',attack);
-  return all(`SELECT h.*, (SELECT COUNT(*)::int FROM abilities a WHERE a.hero_id=h.id) AS ability_count,
+  const columns = searchParams.get('summary') === '1' ? 'h.id,h.name,h.slug,h.primary_attribute,h.attack_type,h.roles,h.base_health,h.base_mana,h.armor,h.image_url' : 'h.*';
+  return all(`SELECT ${columns}, (SELECT COUNT(*)::int FROM abilities a WHERE a.hero_id=h.id) AS ability_count,
     (SELECT COUNT(*)::int FROM talents t WHERE t.hero_id=h.id) AS talent_count
     FROM heroes h ${filters.length?`WHERE ${filters.join(' AND ')}`:''} ORDER BY h.name`,...values);
 }
@@ -41,8 +41,10 @@ async function getHeroDetails(id) {
   ]); return {...hero,abilities,talents,recommended_items};
 }
 async function getPatches() {
-  const patches=await all('SELECT * FROM patches ORDER BY release_date DESC,id DESC');
-  return Promise.all(patches.map(async p=>({...p,changes:await all(`SELECT pc.id,pc.change_type,pc.description,h.name AS hero_name,i.name AS item_name,a.name AS ability_name FROM patch_changes pc LEFT JOIN heroes h ON h.id=pc.hero_id LEFT JOIN items i ON i.id=pc.item_id LEFT JOIN abilities a ON a.id=pc.ability_id WHERE pc.patch_id=? ORDER BY pc.id`,p.id)})));
+  return all(`SELECT p.*, p.release_date::text AS release_date, COALESCE(json_agg(json_build_object('id',pc.id,'change_type',pc.change_type,'description',pc.description,'hero_name',h.name,'item_name',i.name,'ability_name',a.name) ORDER BY pc.id) FILTER (WHERE pc.id IS NOT NULL), '[]'::json) AS changes
+    FROM patches p LEFT JOIN patch_changes pc ON pc.patch_id=p.id
+    LEFT JOIN heroes h ON h.id=pc.hero_id LEFT JOIN items i ON i.id=pc.item_id LEFT JOIN abilities a ON a.id=pc.ability_id
+    GROUP BY p.id ORDER BY p.release_date DESC,p.id DESC`);
 }
 async function getGuides() { return all(`SELECT g.id,g.title,g.role,g.description,g.rating,g.status,g.views,g.is_outdated,g.created_at,h.id AS hero_id,h.name AS hero_name,p.id AS patch_id,p.version AS patch_version,u.nickname AS author FROM guides g JOIN heroes h ON h.id=g.hero_id JOIN patches p ON p.id=g.patch_id JOIN users u ON u.id=g.author_id WHERE g.status='published' ORDER BY g.rating DESC,g.views DESC`); }
 async function getGuideDetails(id) {
@@ -58,7 +60,13 @@ const parseId=raw=>/^\d+$/.test(raw||'')?Number(raw):null;
 async function handleApi(req,res,url) {
   const {pathname,searchParams}=url;
   if(req.method==='GET'&&pathname==='/api/health'){await pool.query('SELECT 1');return sendJson(res,200,{status:'ok',database:'Supabase PostgreSQL',runtime:`Node.js ${process.versions.node}`});}
-  if(req.method==='GET'&&pathname==='/api/stats')return sendJson(res,200,{heroes:await count('heroes'),abilities:await count('abilities'),items:await count('items'),patches:await count('patches'),guides:await count('guides',"WHERE status='published'"),comments:await count('comments','WHERE is_hidden=0')});
+  if(req.method==='GET'&&pathname==='/api/stats')return sendJson(res,200,await one(`SELECT
+    (SELECT COUNT(*)::int FROM heroes) AS heroes,
+    (SELECT COUNT(*)::int FROM abilities) AS abilities,
+    (SELECT COUNT(*)::int FROM items) AS items,
+    (SELECT COUNT(*)::int FROM patches) AS patches,
+    (SELECT COUNT(*)::int FROM guides WHERE status='published') AS guides,
+    (SELECT COUNT(*)::int FROM comments WHERE is_hidden=0) AS comments`));
   if(req.method==='GET'&&pathname==='/api/heroes')return sendJson(res,200,await getHeroes(searchParams));
   if(req.method==='GET'&&pathname.startsWith('/api/heroes/')){const id=parseId(pathname.split('/').at(-1));if(!id)return sendError(res,400,'Некорректный идентификатор героя');const hero=await getHeroDetails(id);return hero?sendJson(res,200,hero):sendError(res,404,'Герой не найден');}
   if(req.method==='GET'&&pathname==='/api/items'){
@@ -103,6 +111,7 @@ function createServer(){return http.createServer(async(req,res)=>{
     if(seo===false)return sendError(res,404,'Герой не найден');
     if(seo){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(req.method==='HEAD'?undefined:seo);}
     const requested=decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname);
+    if(!['/index.html','/app.js','/item-images.js','/data-loader.js','/tailwind.css'].includes(requested))return sendError(res,403,'Доступ запрещён');
     const relative=requested==='/tailwind.css'?'/public/tailwind.css':requested;
     if(relative.split('/').some(part=>part.startsWith('.')))return sendError(res,403,'Доступ запрещён');
     const target=path.resolve(ROOT,`.${relative}`);

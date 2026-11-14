@@ -1,31 +1,33 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f1115">
   <meta name="description" content="Dota Atlas — русскоязычная вики по Dota 2: герои, предметы, патчи и гайды.">
   <title>Dota Atlas — вся Dota 2 в одной вики</title>
-  <link rel="stylesheet" href="/tailwind.css?v=2">
+  <link rel="stylesheet" href="/tailwind.css?v=5">
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
-  <header class="topbar sticky top-0 z-20 flex items-center">
-    <a class="wordmark" href="/" aria-label="Dota Atlas — главная">Dota<span>Atlas</span></a>
-    <nav class="main-nav" aria-label="Основная навигация">
+<body class="min-h-screen m-0 bg-atlas-bg text-atlas-text font-sans text-sm leading-relaxed antialiased [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-55 [&_a:focus-visible]:outline-2 [&_button:focus-visible]:outline-2 [&_input:focus-visible]:outline-2 [&_select:focus-visible]:outline-2 [&_textarea:focus-visible]:outline-2 [&_a:focus-visible]:outline-atlas-gold [&_button:focus-visible]:outline-atlas-gold [&_input:focus-visible]:outline-atlas-gold [&_select:focus-visible]:outline-atlas-gold [&_textarea:focus-visible]:outline-atlas-gold [&_a:focus-visible]:outline-offset-2 [&_button:focus-visible]:outline-offset-2 [&_input:focus-visible]:outline-offset-2 [&_select:focus-visible]:outline-offset-2 [&_textarea:focus-visible]:outline-offset-2">
+  <header class="topbar sticky top-0 z-20 flex items-center sticky top-0 z-20 flex h-[68px] items-center gap-[clamp(14px,2.8vw,48px)] border-b border-[#232731] bg-[#11141a] px-[clamp(18px,4vw,64px)] max-[1050px]:gap-4 max-[1050px]:px-5 max-[760px]:h-auto max-[760px]:min-h-16 max-[760px]:flex-wrap max-[760px]:gap-3 max-[760px]:px-[15px] max-[760px]:py-3">
+    <a class="wordmark whitespace-nowrap border-0 bg-transparent p-0 text-xl font-extrabold tracking-[-.8px] text-atlas-gold max-[760px]:mr-auto [&_span]:text-[#f0bd5f]" href="/" aria-label="Dota Atlas — главная">Dota<span>Atlas</span></a>
+    <nav class="main-nav ml-[clamp(8px,2vw,28px)] flex items-center gap-[clamp(14px,2.8vw,48px)] max-[1050px]:ml-0 max-[1050px]:gap-[17px] max-[760px]:order-3 max-[760px]:w-full max-[760px]:flex-wrap max-[760px]:gap-x-5 max-[760px]:gap-y-0 [&_button]:no-underline [&_button]:whitespace-nowrap [&_button]:border-0 [&_button]:border-b-2 [&_button]:border-transparent [&_button]:bg-transparent [&_button]:py-[23px] [&_button]:text-[13px] [&_button]:text-[#a5a8b1] [&_button]:hover:text-atlas-text [&_a]:no-underline [&_a]:whitespace-nowrap [&_a]:border-0 [&_a]:border-b-2 [&_a]:border-transparent [&_a]:bg-transparent [&_a]:py-[23px] [&_a]:text-[13px] [&_a]:text-[#a5a8b1] [&_a]:hover:text-atlas-text [&_button:hover]:border-b-atlas-red [&_button:hover]:text-atlas-text [&_button.active]:border-b-atlas-red [&_button.active]:text-atlas-text [&_a:hover]:border-b-atlas-red [&_a:hover]:text-atlas-text [&_a.active]:border-b-atlas-red [&_a.active]:text-atlas-text max-[760px]:[&_button]:min-h-11 max-[760px]:[&_button]:py-2 max-[760px]:[&_button]:text-sm max-[760px]:[&_a]:min-h-11 max-[760px]:[&_a]:py-2 max-[760px]:[&_a]:text-sm" aria-label="Основная навигация">
       <a href="/heroes">Герои</a>
       <a href="/items">Предметы</a>
       <button data-page="patches">Патчи</button>
       <button data-page="guides">Гайды</button>
       <button data-page="compare">Сравнение</button>
     </nav>
-    <label class="top-search" aria-label="Поиск по вики"><span>⌕</span><input id="globalSearch" type="search" placeholder="Поиск по вики…" autocomplete="off"></label>
-    <button class="login-button" id="loginButton">Войти</button>
+    <label class="top-search ml-auto flex h-9 w-[min(260px,22vw)] min-w-[130px] items-center gap-2 rounded-full border border-atlas-line bg-[#0e1015] px-[13px] text-[#687080] max-[1050px]:w-[180px] max-[760px]:ml-0 max-[760px]:w-auto max-[760px]:min-w-[100px] max-[760px]:flex-1 [&_span]:text-[22px] [&_span]:leading-none [&_input]:min-w-0 [&_input]:w-full [&_input]:border-0 [&_input]:bg-transparent [&_input]:text-[11px] [&_input]:text-atlas-text [&_input]:outline-none" aria-label="Поиск по вики"><span>⌕</span><input id="globalSearch" type="search" placeholder="Поиск по вики…" autocomplete="off"></label>
+    <button class="login-button whitespace-nowrap rounded-full border-0 bg-atlas-red px-5 py-[9px] text-xs font-bold text-white transition hover:-translate-y-px hover:bg-[#df4a32] max-[760px]:px-[14px]" id="loginButton">Войти</button>
   </header>
-  <main id="pageContent" class="page-content min-h-[calc(100vh-126px)]" aria-live="polite">
-    <section class="home-hero"><div class="eyebrow">GAME KNOWLEDGE BASE</div><h1>Вся Dota 2 <span>в одной вики</span></h1><p>Герои, предметы, патчи и гайды на русском — с пометкой об актуальности.</p><div class="loading-block">Подключаем справочник…</div></section>
+  <main id="pageContent" class="page-content min-h-[calc(100vh-126px)] min-h-[calc(100vh-126px)]" aria-live="polite">
+    <section class="home-hero bg-[radial-gradient(ellipse_at_50%_18%,#25212a_0%,#151821_44%,#151922_75%)] px-6 pb-[54px] pt-[66px] text-center max-[760px]:px-[17px] max-[760px]:pt-12 max-[760px]:pb-9 [&_h1]:mx-auto [&_h1]:mb-3 [&_h1]:text-[clamp(34px,4.1vw,56px)] [&_h1]:font-extrabold [&_h1]:leading-[1.1] [&_h1]:tracking-[-1.8px] [&_h1_span]:text-[#f0f0f2] [&_p]:m-0 [&_p]:text-sm [&_p]:text-atlas-muted max-[760px]:[&_h1]:text-[37px] max-[760px]:[&_p]:mx-auto max-[760px]:[&_p]:max-w-[410px] max-[760px]:[&_p]:text-xs"><div class="eyebrow mb-[10px] text-[10px] font-extrabold tracking-[2px] text-atlas-gold">GAME KNOWLEDGE BASE</div><h1>Вся Dota 2 <span>в одной вики</span></h1><p>Герои, предметы, патчи и гайды на русском — с пометкой об актуальности.</p><div class="loading-block">Подключаем справочник…</div></section>
   </main>
-  <footer class="site-footer flex items-center justify-between gap-4 border-t border-slate-800 px-6 py-4 text-xs text-slate-500"><span><b>Dota Atlas</b> · учебный MVP</span><span>Демонстрационные данные · проверь сведения перед игрой</span><span id="apiStatus">База данных: подключение…</span></footer>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=2" defer></script>
+  <footer class="site-footer flex items-center justify-between gap-4 border-t border-slate-800 px-6 py-4 text-xs text-slate-500 flex items-center justify-between gap-[15px] border-t border-[#222630] px-[clamp(18px,4vw,64px)] py-[18px] text-[10px] text-[#666c79] max-[760px]:grid max-[760px]:gap-[5px] [&_b]:text-atlas-gold"><span><b>Dota Atlas</b> · учебный MVP</span><span>Демонстрационные данные · проверь сведения перед игрой</span><span id="apiStatus">База данных: подключение…</span></footer>
+  <div id="toast" class="toast pointer-events-none fixed bottom-[22px] left-1/2 z-[99] max-w-[calc(100vw-30px)] -translate-x-1/2 translate-y-[15px] rounded-[9px] border border-[#494f5c] bg-[#242833] px-[18px] py-3 text-xs text-white opacity-0 shadow-[0_9px_35px_#0007] transition [&.show]:translate-y-0 [&.show]:opacity-100 duration-200 [&.show]:translate-y-0 [&.show]:opacity-100" role="status" aria-live="polite"></div>
+  <script src="/item-images.js?v=1" defer></script>
+  <script src="/data-loader.js?v=1" defer></script>
+  <script src="/app.js?v=7" defer></script>
 </body>
 </html>

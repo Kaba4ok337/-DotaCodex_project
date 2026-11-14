@@ -7,3 +7,5 @@ npm-debug.log*
 coverage/
 public/tailwind.css
 db/*.db
+*.pem
+*.key

@@ -72,3 +72,8 @@ SELECT setval(pg_get_serial_sequence('public.guides','id'), COALESCE((SELECT MAX
 SELECT setval(pg_get_serial_sequence('public.guide_items','id'), COALESCE((SELECT MAX(id) FROM public.guide_items), 1));
 SELECT setval(pg_get_serial_sequence('public.comments','id'), COALESCE((SELECT MAX(id) FROM public.comments), 1));
 SELECT setval(pg_get_serial_sequence('public.favorites','id'), COALESCE((SELECT MAX(id) FROM public.favorites), 1));
+
+-- Официальная дата: https://www.dota2.com/datafeed/patchnoteslist?language=english
+INSERT INTO patches (version, release_date, summary)
+VALUES ('7.41', '2026-03-24', 'Крупное обновление: удаление аспектов, изменения врождённых способностей, карты и предметов.')
+ON CONFLICT (version) DO NOTHING;

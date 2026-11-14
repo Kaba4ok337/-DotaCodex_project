@@ -1,8 +1,7 @@
 name: Dota Atlas CI and Docker
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read

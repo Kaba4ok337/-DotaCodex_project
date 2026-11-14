@@ -58,6 +58,15 @@ test('hero search supports query and filters', async () => {
   assert.equal(heroes[0].name, 'Axe');
 });
 
+test('hero catalog summary omits long biographies but keeps card fields', async () => {
+  const response = await fetch(`${baseUrl}/api/heroes?summary=1&q=Axe`);
+  const heroes = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(heroes[0].name, 'Axe');
+  assert.equal(heroes[0].lore, undefined);
+  assert.ok('ability_count' in heroes[0]);
+});
+
 test('hero detail returns abilities, talents and guide item recommendations', async () => {
   const response = await fetch(`${baseUrl}/api/heroes/1`);
   const hero = await response.json();
